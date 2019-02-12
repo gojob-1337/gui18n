@@ -1,0 +1,24 @@
+{
+  "name": "gui18n",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:gojob-1337/gui18n.git",
+  "author": "Timur Rustamov <timur.rustamov@epitech.eu>",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel serve src/index.html"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
+    "axios": "^0.18.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.11.0",
+    "@types/react": "^16.8.2",
+    "@types/react-dom": "^16.8.0",
+    "typescript": "^3.3.3"
+  }
+}
