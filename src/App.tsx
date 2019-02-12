@@ -1,8 +1,9 @@
 import React from 'react';
+
 import LoginButton from './components/LoginButton';
 
 const App = () => {
-    return <LoginButton/>
-}
+    return <LoginButton/>;
+};
 
 export default App;
