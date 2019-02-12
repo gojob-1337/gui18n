@@ -1,7 +1,8 @@
 import React from 'react';
+import LoginButton from './components/LoginButton';
 
 const App = () => {
-    return <div>It works on my machine</div>
+    return <LoginButton/>
 }
 
 export default App;
