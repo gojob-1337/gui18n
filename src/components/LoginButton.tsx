@@ -10,7 +10,7 @@ const LoginButton = () => {
         state: '1',
     };
     const url = `${baseUrl}/?${queryString.stringify(params)}`;
-    return <a href={url} > Gitlab connect </a>;
+    return <a href={url}>Gitlab connect</a>;
 };
 
 export default LoginButton;
