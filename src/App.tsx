@@ -1,26 +1,32 @@
 import React, { FunctionComponent, useEffect } from 'react';
 
-import LoginButton from './components/LoginButton';
-import { Dispatch } from 'redux';
-import authSucceeded from './store/actions/auth-succeeded';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import LoginButton from './components/LoginButton';
+import ProjectList from './components/ProjectList';
+import authSucceeded from './store/actions/auth-succeeded';
 
-type AppProps = { auth: () => void }
+type AppProps = { auth: () => void, token?: string };
 
 const App: FunctionComponent<AppProps> = (props) => {
     useEffect(() => {
         props.auth();
     }, []);
-    return (
-        <LoginButton />
-    );
+    if (!props.token) {
+        return <LoginButton />;
+    }
+    return <ProjectList/>;
+
+};
+
+const mapStateToProps = (state: any) => {
+    return {token: state.token} ;
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
-        auth: () => dispatch(authSucceeded(window.location.hash))
-    }
+        auth: () => dispatch(authSucceeded(window.location.hash)),
+    };
 };
 
-
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
