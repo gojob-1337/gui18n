@@ -1,17 +1,26 @@
-import React from 'react';
-import { Provider } from 'react-redux';
+import React, { FunctionComponent, useEffect } from 'react';
 
 import LoginButton from './components/LoginButton';
-import useHashToken from './hooks/useHashToken';
-import store from './store';
+import { Dispatch } from 'redux';
+import authSucceeded from './store/actions/auth-succeeded';
+import { connect } from 'react-redux';
 
-const App = () => {
-    const token = useHashToken();
+type AppProps = { auth: () => void }
 
-    return (<Provider store={store}>
-      {token}
-      <LoginButton/>
-    </Provider>);
+const App: FunctionComponent<AppProps> = (props) => {
+    useEffect(() => {
+        props.auth();
+    }, []);
+    return (
+        <LoginButton />
+    );
 };
 
-export default App;
+const mapDispatchToProps = (dispatch: Dispatch) => {
+    return {
+        auth: () => dispatch(authSucceeded(window.location.hash))
+    }
+};
+
+
+export default connect(null, mapDispatchToProps)(App);
