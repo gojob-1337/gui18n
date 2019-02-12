@@ -6,7 +6,8 @@
   "author": "Timur Rustamov <timur.rustamov@epitech.eu>",
   "license": "MIT",
   "scripts": {
-    "start": "parcel serve src/index.html"
+    "start": "parcel serve src/index.html",
+    "lint": "./node_modules/.bin/tslint -p ."
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",
@@ -22,6 +23,7 @@
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "parcel-bundler": "^1.11.0",
+    "tslint": "^5.12.1",
     "typescript": "^3.3.3"
   }
 }
