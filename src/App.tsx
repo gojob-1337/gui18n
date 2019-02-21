@@ -16,7 +16,6 @@ const App: FunctionComponent = observer((props) => {
     }
 
     return <ProjectList/>;
-
 });
 
 export default App;
