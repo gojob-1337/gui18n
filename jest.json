@@ -1,0 +1,19 @@
+{
+  "testEnvironment": "node",
+  "notify": true,
+  "transform": {
+    "^.+\\.tsx?$": "ts-jest"
+  },
+  "modulePaths": [
+    "<rootDir>/src/"
+  ],
+  "moduleFileExtensions": [
+    "ts",
+    "tsx",
+    "js",
+    "json"
+  ],
+  "coverageReporters": ["json", "lcov"],
+  "coverageDirectory": "coverage",
+  "verbose": true
+}
