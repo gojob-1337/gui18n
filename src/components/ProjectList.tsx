@@ -1,23 +1,28 @@
-import React, { FunctionComponent } from 'react';
-import { connect } from 'react-redux';
-import createUseAxios from '../hooks/useAxios';
+import React, { FunctionComponent, useEffect } from 'react';
 
-const useProjectList = createUseAxios((token?: string) => (
-    {
-        url: 'https://gitlab.com/api/v4/projects',
-        headers: { Authorization: `Bearer ${token}` },
-        params: { membership: true },
-    }),
-);
-type ProjectListProps = { token?: string };
+import { observer } from 'mobx-react-lite';
 
-const ProjectList: FunctionComponent<ProjectListProps> = (props) => {
-    const {data, loading, error} = useProjectList(props.token);
-    return <div>{JSON.stringify(data)}</div>;
-};
+import { useStore } from '../store';
+import Project from './Project';
 
-const mapStateToProps = (state: any) => {
-    return { token: state.token };
-};
+const ProjectList: FunctionComponent = observer(() => {
+  const { getProjects, token, projects } = useStore();
+  useEffect(() => {
+    if (token) {
+      getProjects();
+    }
+  }, [token]);
 
-export default connect(mapStateToProps)(ProjectList);
+  if (!projects) {
+    return null;
+  }
+  return (
+    <>
+      {projects.map((project) => (
+        <Project key={project.id} name={project.name} />
+      ))}
+    </>
+  );
+});
+
+export default ProjectList;
