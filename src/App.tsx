@@ -10,9 +10,11 @@ const App: FunctionComponent = observer((props) => {
     useEffect(() => {
         store.authenticate();
     }, []);
+
     if (!store.token) {
         return <LoginButton />;
     }
+
     return <ProjectList/>;
 
 });

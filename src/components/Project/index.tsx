@@ -1,23 +1,25 @@
 import React, { FunctionComponent } from 'react';
 
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import { Project as ProjectType } from 'gitlab';
+import { CardActionArea } from '@material-ui/core';
 
 export type ProjectProps = {
   name: string;
+  onClickHandler: () => void;
 };
 
 const Project: FunctionComponent<ProjectProps> = (props) => {
-  const { name } = props;
+  const { onClickHandler, name } = props;
   return (
     <Card>
-      <CardContent>
-        <Typography variant="h3">{name}</Typography>
-      </CardContent>
+      <CardActionArea onClick={onClickHandler}>
+        <CardContent>
+          <Typography variant="h3">{name}</Typography>
+        </CardContent>
+      </CardActionArea>
     </Card>
   );
 };

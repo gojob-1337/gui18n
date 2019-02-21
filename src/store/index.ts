@@ -12,6 +12,9 @@ class Store {
   token?: string;
 
   @observable
+  selectedProject?: Project;
+
+  @observable
   projects?: Project[];
 
   @action.bound
