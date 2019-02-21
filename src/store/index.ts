@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Project } from 'gitlab';
 import { action, observable } from 'mobx';
 import { useObservable } from 'mobx-react-lite';
+import { RouterStore } from 'mobx-react-router';
 import { parse } from 'query-string';
 
 class Store {
@@ -16,6 +17,9 @@ class Store {
 
   @observable
   projects?: Project[];
+
+  @observable
+  routing: RouterStore = new RouterStore();
 
   @action.bound
   authenticate() {

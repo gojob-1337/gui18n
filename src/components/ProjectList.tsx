@@ -24,10 +24,11 @@ const useStyles = makeStyles({
 
 const ProjectList: FunctionComponent = observer(() => {
   const projects = useProjects();
-  let { selectedProject } = useStore();
+  const store = useStore();
   const createProjectSelector = useCallback((project: ProjectType) => () => {
-    selectedProject = project;
-  }, [selectedProject]);
+    store.selectedProject = project;
+    store.routing.push('/branch-switcher');
+  }, [store.selectedProject]);
   const classes = useStyles();
 
   if (!projects) {

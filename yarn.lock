@@ -4507,6 +4507,11 @@ mobx-react-lite@^1.0.1:
   resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-1.0.1.tgz#8f6ce216a05d79d3d70f1ce27386bba35c02926d"
   integrity sha512-Rpnhwu+YK0b+sZS+yqaWZOd3nOfSlPuBB2G/6ylsEAl9M11fVYTN7la704Wkkdo9k2nyXmNOzedL0/nm+vbAeA==
 
+mobx-react-router@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/mobx-react-router/-/mobx-react-router-4.0.5.tgz#5f270eebceb64c256bc2f3c6bde8c5d88e76819e"
+  integrity sha512-h3c+BOnCJFPOr4O7Fl6YQT8LXKXv3av9zXk4480BVIkiqJT4rTU4D4B/lmGLcjJA9NyqzlnN03wtlftg49xQmA==
+
 mobx-react@^5.4.3:
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-5.4.3.tgz#6709b7dd89670c40e9815914ac2ca49cc02bfb47"

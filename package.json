@@ -23,6 +23,7 @@
     "mobx-react": "^5.4.3",
     "mobx-react-devtools": "^6.0.3",
     "mobx-react-lite": "^1.0.1",
+    "mobx-react-router": "^4.0.5",
     "query-string": "^6.2.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
