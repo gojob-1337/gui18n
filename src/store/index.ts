@@ -48,6 +48,11 @@ class Store {
       this.errors.push(e);
     }
   }
+
+  @action.bound
+  setSelectedProject(project: Project) {
+    this.selectedProject = project;
+  }
 }
 
 const store = new Store();

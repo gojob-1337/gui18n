@@ -10,8 +10,6 @@ import { useStore } from '../store';
 import Project from './Project';
 
 const useStyles = makeStyles({
-  root: {
-  },
   loading: {
     minWidth: '100vw',
     minHeight: '100vh',
@@ -23,22 +21,25 @@ const useStyles = makeStyles({
 });
 
 const ProjectList: FunctionComponent = observer(() => {
+  const cssClasses = useStyles();
   const projects = useProjects();
   const store = useStore();
   const createProjectSelector = useCallback((project: ProjectType) => () => {
-    store.selectedProject = project;
+    store.setSelectedProject(project);
     store.routing.push('/branch-switcher');
   }, [store.selectedProject]);
-  const classes = useStyles();
 
   if (!projects) {
-    return <div className={classes.loading}><CircularProgress /></div>;
+    return <div className={cssClasses.loading}><CircularProgress /></div>;
   }
 
   return (
     <>
       {projects.map((project) => (
-        <Project key={project.id} name={project.name} onClickHandler={createProjectSelector(project)}/>
+        <Project
+          key={project.id}
+          name={project.name}
+          onClickHandler={createProjectSelector(project)}/>
       ))}
     </>
   );
