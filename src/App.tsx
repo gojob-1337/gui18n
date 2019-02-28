@@ -1,20 +1,24 @@
-import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect } from 'react';
 
-import LoginButton from './components/LoginButton';
-import ProjectList from './components/ProjectList';
+import { createMuiTheme } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/styles';
+import { observer } from 'mobx-react-lite';
+
 import { useStore } from './store';
 
-const App: FunctionComponent = observer((props) => {
-    const store = useStore();
-    useEffect(() => {
-        store.authenticate();
-    }, []);
-    if (!store.token) {
-        return <LoginButton />;
-    }
-    return <ProjectList/>;
+import Pages from './pages';
 
+const theme = createMuiTheme();
+
+const App: FunctionComponent = observer((props) => {
+  const store = useStore();
+  useEffect(() => void store.authenticate(), []);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Pages />
+    </ThemeProvider>
+  );
 });
 
 export default App;
