@@ -1,5 +1,8 @@
-import queryString from 'query-string';
 import React from 'react';
+
+import queryString from 'query-string';
+
+import Button from '@material-ui/core/Button';
 
 const LoginButton = () => {
     const baseUrl = 'https://gitlab.com/oauth/authorize';
@@ -10,7 +13,8 @@ const LoginButton = () => {
         state: '1',
     };
     const url = `${baseUrl}/?${queryString.stringify(params)}`;
-    return <a href={url}>Gitlab connect</a>;
+
+    return <Button variant="contained" color="secondary" href={url}>Gitlab connect</Button>;
 };
 
-export default LoginButton;
+export default React.memo(LoginButton);

@@ -76,4 +76,12 @@ declare module 'gitlab' {
     external_authorization_classification_label: string;
     packages_enabled?: boolean;
   }
+
+  export type RepositoryFile = {
+    id: string;
+    name: string;
+    type: string;
+    path: string;
+    mode: string;
+  };
 }
