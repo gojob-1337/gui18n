@@ -13,7 +13,7 @@ import { observer } from 'mobx-react-lite';
 
 import ScrollToTop from '../../components/ScrollToTop';
 
-import { useStore } from '../../store';
+import { useProjectStore } from '../../store';
 import { history } from '../index';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const Projects: FunctionComponent = observer(() => {
-  const { projects } = useStore();
+  const { projects } = useProjectStore();
   const classes = useStyles();
   const { data, loading } = projects;
 
@@ -41,11 +41,11 @@ const Projects: FunctionComponent = observer(() => {
     >
       <ScrollToTop />
       {data.map((project) => (
-        <ListItem button onClick={() => history.push(`/projects/${project.id}`)}>
+        <ListItem button key={project.id} onClick={() => history.push(`/projects/${project.id}`)}>
           <ListItemAvatar>
             <Avatar src={project.avatar_url}>{project.name.slice(0, 2)}</Avatar>
           </ListItemAvatar>
-          <ListItemText primary={project.name} secondary={project.namespace.name} />
+          <ListItemText primary={project.name_with_namespace} secondary={project.description} />
         </ListItem>
       ))}
     </List>
