@@ -1,7 +1,9 @@
 import { Project, RepositoryFile } from 'gitlab';
 import { observable } from 'mobx';
 
-import { conditionalAction, remoteResource, Store } from '.';
+import { Store } from '.';
+import conditionalAction from './conditionalAction';
+import remoteResource from './remoteResource';
 
 class SelectedProjectStore {
   constructor(private readonly rootStore: Store) {}
@@ -10,9 +12,9 @@ class SelectedProjectStore {
   project?: Project | null;
 
   select = conditionalAction(
-    () => !!this.rootStore.projectsStore.projects.data,
+    () => !!this.rootStore.projects.data,
     (projectId: string) =>
-      (this.project = this.rootStore.projectsStore.projects.data!.find(
+      (this.project = this.rootStore.projects.data!.find(
         (project) => project.id === parseInt(projectId as string, 10),
       )),
   );

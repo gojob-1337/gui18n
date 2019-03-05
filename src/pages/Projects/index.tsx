@@ -13,7 +13,7 @@ import { observer } from 'mobx-react-lite';
 
 import ScrollToTop from '../../components/ScrollToTop';
 
-import { useProjectStore } from '../../store';
+import { useStore } from '../../store';
 import { history } from '../index';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const Projects: FunctionComponent = observer(() => {
-  const { projects } = useProjectStore();
+  const { projects } = useStore();
   const classes = useStyles();
   const { data, loading } = projects;
 

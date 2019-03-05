@@ -1,71 +1,10 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { action, autorun, flow, observable, runInAction, when } from 'mobx';
+import { Project } from 'gitlab';
+import { action, autorun, observable, runInAction } from 'mobx';
 import { useObservable } from 'mobx-react-lite';
 import { parse } from 'query-string';
-import ProjectsStore from './projects';
+
+import remoteResource from './remoteResource';
 import SelectedProjectStore from './selectedProject';
-
-type AxiosConfigCreator<T extends any[]> = (
-  ...args: T
-) => AxiosRequestConfig | undefined | null | false | 0;
-
-type FetchableObservable<T, U extends any[] = any[]> = {
-  load: AxiosConfigCreator<U>;
-  data?: T;
-  loading: boolean;
-  error?: any;
-};
-
-export const remoteResource = <T, U extends any[] = any[]>(
-  getAxiosConfiguration: AxiosConfigCreator<U>,
-) => {
-  const obs = observable<FetchableObservable<T, U>>({
-    load: (...args: U) => {
-      const requestConfig = getAxiosConfiguration.apply(null, args);
-      if (requestConfig) {
-        obs.loading = true;
-        axios(requestConfig)
-          .then(({ data }) => void fetchSuccess(data))
-          .catch((e) => void fetchFailed(e));
-      }
-      return requestConfig;
-    },
-    data: undefined,
-    loading: false,
-    error: undefined,
-  });
-  const fetchSuccess = action((data: any) => {
-    obs.data = data;
-    obs.loading = false;
-  });
-  const fetchFailed = action((e: any) => {
-    obs.loading = false;
-    obs.error = e;
-  });
-  // Call first time
-  autorun(() => void obs.load.apply(null, [] as any));
-  return obs;
-};
-
-export function conditionalAction<T extends any[]>(
-  predicate: () => boolean,
-  reaction: (...args: T) => void,
-) {
-  const functor = function(this: { cancel?: () => void }) {
-    if (this.cancel) {
-      this.cancel();
-    }
-    const f = flow(function*(...args: T) {
-      yield when(predicate);
-      runInAction(() => reaction.apply(null, args));
-    });
-    return (...args: T) => {
-      const r = f.apply(this, args);
-      this.cancel = r.cancel;
-    };
-  };
-  return functor.call({});
-}
 
 export class Store {
   @observable
@@ -73,7 +12,16 @@ export class Store {
   @observable
   token?: string = undefined;
 
-  projectsStore = new ProjectsStore(this);
+  projects = remoteResource<Project[]>(() => {
+    if (!this.token) {
+      return null;
+    }
+    return {
+      url: 'https://gitlab.com/api/v4/projects',
+      headers: { Authorization: `Bearer ${this.token}` },
+      params: { membership: true },
+    };
+  });
   selectedProjectStore = new SelectedProjectStore(this);
 
   authenticate = action(() => {
@@ -89,19 +37,27 @@ export class Store {
 
 const store = new Store();
 
+if (window) {
+  const token = window.localStorage.getItem('token');
+  if (token) {
+    runInAction(() => (store.token = token));
+  }
+  autorun(() => {
+    if (store.token) {
+      window.localStorage.setItem('token', store.token);
+    }
+  });
+}
+
 export default store;
 
 export const useStore = () => {
   return useObservable(store);
 };
-export const useProjectStore = () => {
-  const { projectsStore } = useObservable(store);
-  return projectsStore;
-};
 export const useSelectedProjectStore = () => {
   const { selectedProjectStore } = useObservable(store);
   return selectedProjectStore;
-}
+};
 export const useIsAuthenticated = () => {
   const { token } = useStore();
   return !!token;
