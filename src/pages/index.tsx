@@ -9,6 +9,7 @@ import { useIsAuthenticated } from '../store';
 
 import Projects from './Projects';
 import Files from './Projects/Files';
+import Translations from './Projects/Translations';
 import Welcome from './Welcome';
 
 export const history = createBrowserHistory();
@@ -31,9 +32,21 @@ const Pages: FunctionComponent = observer(() => {
     <div className={classes.root}>
       <Router history={history}>
         <Switch>
-          {auth && <Route path="/projects/:projectId" component={(props: any) => <Files {...props} />}/>}
+          {auth && (
+            <Route
+              path="/projects/:projectId/:filePath"
+              component={(props: any) => <Translations {...props} />}
+            />
+          )}
+          {auth && (
+            <Route path="/projects/:projectId" component={(props: any) => <Files {...props} />} />
+          )}
           {auth && <Route path="/projects" component={() => <Projects />} />}
-          <Route exact path="/" component={() => (auth ? <Redirect to="/projects" /> : <Welcome />)} />
+          <Route
+            exact
+            path="/"
+            component={() => (auth ? <Redirect to="/projects" /> : <Welcome />)}
+          />
           <Route component={() => <h2>Page not found</h2>} />
         </Switch>
       </Router>

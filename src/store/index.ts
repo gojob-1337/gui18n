@@ -3,8 +3,10 @@ import { action, autorun, observable, runInAction } from 'mobx';
 import { useObservable } from 'mobx-react-lite';
 import { parse } from 'query-string';
 
+import ConfigurationStore from './configuration';
 import remoteResource from './remoteResource';
-import SelectedProjectStore from './selectedProject';
+import SelectedProjectStore from './SelectedProject';
+import TranslationsStore from './Translations';
 
 export class Store {
   @observable
@@ -22,7 +24,10 @@ export class Store {
       params: { membership: true },
     };
   });
-  selectedProjectStore = new SelectedProjectStore(this);
+
+  configurationStore = new ConfigurationStore(this);
+  selectedProjectStore = new SelectedProjectStore(this, this.configurationStore);
+  translationsStore = new TranslationsStore(this, this.selectedProjectStore);
 
   authenticate = action(() => {
     const currentHash = window.location && window.location.hash;
@@ -58,7 +63,17 @@ export const useSelectedProjectStore = () => {
   const { selectedProjectStore } = useObservable(store);
   return selectedProjectStore;
 };
+export const useTranslations = () => {
+  const { translationsStore } = useObservable(store);
+  return translationsStore;
+};
+
 export const useIsAuthenticated = () => {
   const { token } = useStore();
   return !!token;
+};
+
+export const useConfiguration = () => {
+  const { configurationStore } = useObservable(store);
+  return configurationStore;
 };

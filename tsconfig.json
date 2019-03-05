@@ -5,6 +5,13 @@
     "jsx": "react",
     "strict": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "esnext.array",
+      "esnext.asynciterable"
+    ]
   }
 }

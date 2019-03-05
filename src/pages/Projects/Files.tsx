@@ -14,9 +14,9 @@ import File from '@material-ui/icons/InsertDriveFile';
 import { makeStyles } from '@material-ui/styles';
 import { observer } from 'mobx-react-lite';
 
+import { history } from '..';
 import ScrollToTop from '../../components/ScrollToTop';
-
-import { useSelectedProjectStore } from '../../store';
+import { useSelectedProjectStore, useTranslations } from '../../store';
 
 export type FilesProps = {} & RouteComponentProps<{ projectId: string }>;
 
@@ -33,6 +33,10 @@ const Files: FunctionComponent<FilesProps> = observer((props) => {
   const { projectId } = props.match.params;
   const classes = useStyles();
   const { select, files, project } = useSelectedProjectStore();
+  const selectFile = (filePath: string) => () => {
+    history.push(`/projects/${projectId}/${encodeURIComponent(filePath)}`);
+  };
+
   useEffect(() => void select(projectId), [projectId]);
 
   if (!projectId) {
@@ -46,22 +50,19 @@ const Files: FunctionComponent<FilesProps> = observer((props) => {
   return (
     <List
       component="nav"
-      subheader={
-        <ListSubheader component="div">
-          {project.name} files:
-        </ListSubheader>
-      }
+      subheader={<ListSubheader component="div">{project.name} files:</ListSubheader>}
       className={classes.list}
     >
       <ScrollToTop />
-      {data.map((file) => (
-        <ListItem button key={file.id}>
-          <ListItemIcon>
-            {file.type === 'tree' ? <Folder /> : <File />}
-          </ListItemIcon>
-          <ListItemText primary={file.name} secondary={file.path} />
-        </ListItem>
-      ))}
+      {data
+        .filter((file) => file.type === 'blob')
+        .map((file) => (
+          <ListItem button key={file.id} onClick={selectFile(file.path)}>
+            {/** Let the Icon live...for now! 👿 */}
+            <ListItemIcon>{file.type === 'tree' ? <Folder /> : <File />}</ListItemIcon>
+            <ListItemText primary={file.name} secondary={file.path} />
+          </ListItem>
+        ))}
     </List>
   );
 });
