@@ -16,7 +16,7 @@ import { observer } from 'mobx-react-lite';
 
 import ScrollToTop from '../../components/ScrollToTop';
 
-import { useStore } from '../../store';
+import { useSelectedProjectStore } from '../../store';
 
 export type FilesProps = {} & RouteComponentProps<{ projectId: string }>;
 
@@ -31,32 +31,34 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Files: FunctionComponent<FilesProps> = observer((props) => {
   const { projectId } = props.match.params;
-  const { projects, selectProject, selectedProject, selectedProjectFiles } = useStore();
-  const { data, loading } = selectedProjectFiles;
   const classes = useStyles();
-  useEffect(() => {
-    if (projectId) {
-      selectProject(projectId);
-    }
-  }, [projectId, projects.data]);
+  const { select, files, project } = useSelectedProjectStore();
+  useEffect(() => void select(projectId), [projectId]);
 
   if (!projectId) {
     return null;
   }
 
-  if (!selectedProject || !data || loading) {
+  const { data, loading } = files;
+  if (!project || !data || loading) {
     return <CircularProgress />;
   }
   return (
     <List
       component="nav"
-      subheader={<ListSubheader component="div">{selectedProject.name} files:</ListSubheader>}
+      subheader={
+        <ListSubheader component="div">
+          {project.name} files:
+        </ListSubheader>
+      }
       className={classes.list}
     >
       <ScrollToTop />
       {data.map((file) => (
-        <ListItem button>
-          <ListItemIcon>{file.type === 'tree' ? <Folder /> : <File />}</ListItemIcon>
+        <ListItem button key={file.id}>
+          <ListItemIcon>
+            {file.type === 'tree' ? <Folder /> : <File />}
+          </ListItemIcon>
           <ListItemText primary={file.name} secondary={file.path} />
         </ListItem>
       ))}

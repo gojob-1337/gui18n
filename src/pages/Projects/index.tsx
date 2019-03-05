@@ -41,11 +41,11 @@ const Projects: FunctionComponent = observer(() => {
     >
       <ScrollToTop />
       {data.map((project) => (
-        <ListItem button onClick={() => history.push(`/projects/${project.id}`)}>
+        <ListItem button key={project.id} onClick={() => history.push(`/projects/${project.id}`)}>
           <ListItemAvatar>
             <Avatar src={project.avatar_url}>{project.name.slice(0, 2)}</Avatar>
           </ListItemAvatar>
-          <ListItemText primary={project.name} secondary={project.namespace.name} />
+          <ListItemText primary={project.name_with_namespace} secondary={project.description} />
         </ListItem>
       ))}
     </List>
