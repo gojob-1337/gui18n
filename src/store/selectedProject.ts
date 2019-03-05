@@ -26,7 +26,7 @@ class SelectedProjectStore {
     return {
       url: `https://gitlab.com/api/v4/projects/${this.project.id}/repository/tree`,
       headers: { Authorization: `Bearer ${this.rootStore.token}` },
-      params: { recursive: true, per_page: 500 },
+      params: { recursive: true, per_page: 100, path: 'src/Translation/lang/' },
     };
   });
 }

@@ -4,7 +4,8 @@ import { useObservable } from 'mobx-react-lite';
 import { parse } from 'query-string';
 
 import remoteResource from './remoteResource';
-import SelectedProjectStore from './selectedProject';
+import SelectedProjectStore from './SelectedProject';
+import TranslationsStore from './Translations';
 
 export class Store {
   @observable
@@ -22,7 +23,9 @@ export class Store {
       params: { membership: true },
     };
   });
+
   selectedProjectStore = new SelectedProjectStore(this);
+  translationsStore = new TranslationsStore(this, this.selectedProjectStore);
 
   authenticate = action(() => {
     const currentHash = window.location && window.location.hash;
@@ -58,6 +61,11 @@ export const useSelectedProjectStore = () => {
   const { selectedProjectStore } = useObservable(store);
   return selectedProjectStore;
 };
+export const useTranslations = () => {
+  const { translationsStore } = useObservable(store);
+  return translationsStore;
+};
+
 export const useIsAuthenticated = () => {
   const { token } = useStore();
   return !!token;
