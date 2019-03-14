@@ -44,13 +44,13 @@ const Files: FunctionComponent<FilesProps> = observer((props) => {
   }
 
   const { data, loading } = files;
-  if (!project || !data || loading) {
+  if (!project.data || !data || loading) {
     return <CircularProgress />;
   }
   return (
     <List
       component="nav"
-      subheader={<ListSubheader component="div">{project.name} files:</ListSubheader>}
+      subheader={<ListSubheader component="div">{project.data.name} files:</ListSubheader>}
       className={classes.list}
     >
       <ScrollToTop />

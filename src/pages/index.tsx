@@ -8,6 +8,7 @@ import { Redirect, Route, Router, Switch } from 'react-router';
 import { useIsAuthenticated } from '../store';
 
 import Projects from './Projects';
+import Branches from './Projects/Branches';
 import Files from './Projects/Files';
 import Translations from './Projects/Translations';
 import Welcome from './Welcome';
@@ -39,7 +40,7 @@ const Pages: FunctionComponent = observer(() => {
             />
           )}
           {auth && (
-            <Route path="/projects/:projectId" component={(props: any) => <Files {...props} />} />
+            <Route path="/projects/:projectId" component={(props: any) => <Branches {...props} />} />
           )}
           {auth && <Route path="/projects" component={() => <Projects />} />}
           <Route

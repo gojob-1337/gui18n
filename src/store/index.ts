@@ -4,8 +4,9 @@ import { useObservable } from 'mobx-react-lite';
 import { parse } from 'query-string';
 
 import ConfigurationStore from './configuration';
+import ProjectBranchesStore from './projectBranches';
 import remoteResource from './remoteResource';
-import SelectedProjectStore from './SelectedProject';
+import SelectedProjectStore from './selectedProject';
 import TranslationsStore from './Translations';
 
 export class Store {
@@ -14,6 +15,12 @@ export class Store {
   @observable
   token?: string = undefined;
 
+  @observable
+  projectSearch?: string = undefined;
+  setProjectSearch = action((search?: string) => {
+    this.projectSearch = search;
+  });
+
   projects = remoteResource<Project[]>(() => {
     if (!this.token) {
       return null;
@@ -21,12 +28,13 @@ export class Store {
     return {
       url: 'https://gitlab.com/api/v4/projects',
       headers: { Authorization: `Bearer ${this.token}` },
-      params: { membership: true },
+      params: { membership: true, simple: true, search: this.projectSearch },
     };
   });
 
   configurationStore = new ConfigurationStore(this);
   selectedProjectStore = new SelectedProjectStore(this, this.configurationStore);
+  projectBranchesStore = new ProjectBranchesStore(this);
   translationsStore = new TranslationsStore(this, this.selectedProjectStore);
 
   authenticate = action(() => {
@@ -66,6 +74,10 @@ export const useSelectedProjectStore = () => {
 export const useTranslations = () => {
   const { translationsStore } = useObservable(store);
   return translationsStore;
+};
+export const useProjectBranchesStore = () => {
+  const { projectBranchesStore } = useObservable(store);
+  return projectBranchesStore;
 };
 
 export const useIsAuthenticated = () => {

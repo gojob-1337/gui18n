@@ -17,13 +17,13 @@ class ConfigurationStore {
 
   @observable
   configuration = remoteResource<Configuration>(() => {
-    if (!this.rootStore.token || !this.rootStore.selectedProjectStore.project ) {
+    if (!this.rootStore.token || !this.rootStore.selectedProjectStore.project.data ) {
       return null;
     }
 
     return {
       url: `https://gitlab.com/api/v4/projects/${
-        this.rootStore.selectedProjectStore.project!.id
+        this.rootStore.selectedProjectStore.project.data.id
       }/repository/files/${encodeURIComponent(ConfigurationStore.configurationFilePath)}/raw`,
       method: 'get',
       params: { ref: 'test/gui18n' },
