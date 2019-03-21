@@ -7,7 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import TextField from '@material-ui/core/TextField';
+import FileCopy from '@material-ui/icons/FileCopy';
 import Folder from '@material-ui/icons/Folder';
 import { makeStyles } from '@material-ui/styles';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -41,37 +41,48 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+function  getCurrentPath(configuration) {
+  const {data} = configuration;
+
+  if (!data) {
+    return null;
+  }
+
+  const defaultLanguage =  data.languages.find((lng) => lng.name === data.defaultLanguage);
+  return defaultLanguage ? defaultLanguage.path : null;
+}
+
 export type FilesProps = {} & RouteComponentProps<{ projectId: string; branchPath: string }>;
 
 const Files: FunctionComponent<FilesProps> = (props) => {
   const { projectId, branchPath } = props.match.params;
 
   const token = useToken();
-  const [search, setSearch] = useState<string | undefined>(undefined);
+
+  const config = useAxios(
+    () => ({
+      url: `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${encodeURIComponent('.gui18n.json')}/raw`,
+      headers: { Authorization: `Bearer ${token}` },
+      params: { per_page: 100, ref: 'test/gui18n' },
+    }),
+    [ projectId, branchPath],
+  );
+
+  const path = getCurrentPath(config);
 
   const { data, loading } = useAxios(
     () => ({
       url: `https://gitlab.com/api/v4/projects/${projectId}/repository/tree`,
       headers: { Authorization: `Bearer ${token}` },
-      params: { per_page: 100, ref: branchPath, search },
+      params: { per_page: 100, ref: decodeURIComponent(branchPath), path },
     }),
-    [search, projectId],
+    [ projectId, branchPath, path],
   );
 
   const classes = useStyles();
 
-  const handleSearch = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.value.length >= 3) {
-        return setSearch(e.target.value);
-      }
-      setSearch(undefined);
-    },
-    [setSearch],
-  );
-
   const selectFile = (filePath: string) => () => {
-    history.push(`/projects/${projectId}/${branchPath}/${encodeURIComponent(filePath)}`);
+    history.push(`/projects/${projectId}/${encodeURIComponent(branchPath)}/${encodeURIComponent(filePath)}`);
   };
 
   return (
@@ -80,13 +91,12 @@ const Files: FunctionComponent<FilesProps> = (props) => {
       subheader={
         <ListSubheader className={classes.subheader} component="div">
           FICHIERS
-          <TextField placeholder="Search" value={search} onChange={handleSearch} />
         </ListSubheader>
       }
       className={classes.list}
     >
       <ScrollToTop />
-      {!data || loading ? (
+      {!data || !path || loading ? (
         <div className={classes.spinnerWrapper}>
           <CircularProgress />
         </div>
@@ -94,7 +104,7 @@ const Files: FunctionComponent<FilesProps> = (props) => {
         data.map((file) => (
           <ListItem button key={file.id} onClick={selectFile(file.path)}>
             {/** Let the Icon live...for now! 👿 */}
-            <ListItemIcon>{file.type === 'tree' ? <Folder /> : <Folder />}</ListItemIcon>
+            <ListItemIcon>{file.type === 'tree' ? <Folder /> : <FileCopy />}</ListItemIcon>
             <ListItemText primary={file.name} secondary={file.path} />
           </ListItem>
         ))

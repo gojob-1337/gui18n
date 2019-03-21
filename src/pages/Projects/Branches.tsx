@@ -92,7 +92,7 @@ const Branches: FunctionComponent<BranchesProps> = (props) => {
             <ListItem
               button
               key={branch.name}
-              onClick={() => history.push(`/projects/${projectId}/${branch.name}`)}
+              onClick={() => history.push(`/projects/${projectId}/${encodeURIComponent(branch.name)}`)}
             >
               <ListItemText primary={branch.name} />
             </ListItem>
