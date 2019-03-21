@@ -1,10 +1,9 @@
-import axios from 'axios';
-import { observable, runInAction } from 'mobx';
+import { observable } from 'mobx';
 
 import { Store } from '.';
 import conditionalAction from './conditionalAction';
 import remoteResource from './remoteResource';
-import SelectedProjectStore from './selectedProject';
+import SelectedProjectStore from './SelectedProject';
 
 export type Translation = {
   key: string;
