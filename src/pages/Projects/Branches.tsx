@@ -1,14 +1,14 @@
 import React, { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
 
 import { Theme } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import TextField from '@material-ui/core/TextField';
-import Folder from '@material-ui/icons/Folder';
 import { makeStyles } from '@material-ui/styles';
 import { RouteComponentProps, withRouter } from 'react-router';
 
@@ -41,19 +41,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-export type FilesProps = {} & RouteComponentProps<{ projectId: string; branchPath: string }>;
+export type BranchesProps = {} & RouteComponentProps<{ projectId: string }>;
 
-const Files: FunctionComponent<FilesProps> = (props) => {
-  const { projectId, branchPath } = props.match.params;
-
+const Branches: FunctionComponent<BranchesProps> = (props) => {
+  const { projectId } = props.match.params;
   const token = useToken();
   const [search, setSearch] = useState<string | undefined>(undefined);
 
   const { data, loading } = useAxios(
     () => ({
-      url: `https://gitlab.com/api/v4/projects/${projectId}/repository/tree`,
+      url: `https://gitlab.com/api/v4/projects/${projectId}/repository/branches`,
       headers: { Authorization: `Bearer ${token}` },
-      params: { per_page: 100, ref: branchPath, search },
+      params: { search },
     }),
     [search, projectId],
   );
@@ -70,16 +69,12 @@ const Files: FunctionComponent<FilesProps> = (props) => {
     [setSearch],
   );
 
-  const selectFile = (filePath: string) => () => {
-    history.push(`/projects/${projectId}/${branchPath}/${encodeURIComponent(filePath)}`);
-  };
-
   return (
     <List
       component="nav"
       subheader={
         <ListSubheader className={classes.subheader} component="div">
-          FICHIERS
+          BRANCHES
           <TextField placeholder="Search" value={search} onChange={handleSearch} />
         </ListSubheader>
       }
@@ -91,16 +86,20 @@ const Files: FunctionComponent<FilesProps> = (props) => {
           <CircularProgress />
         </div>
       ) : (
-        data.map((file) => (
-          <ListItem button key={file.id} onClick={selectFile(file.path)}>
-            {/** Let the Icon live...for now! 👿 */}
-            <ListItemIcon>{file.type === 'tree' ? <Folder /> : <Folder />}</ListItemIcon>
-            <ListItemText primary={file.name} secondary={file.path} />
-          </ListItem>
-        ))
+        data
+          .filter((branch) => !branch.merged)
+          .map((branch) => (
+            <ListItem
+              button
+              key={branch.name}
+              onClick={() => history.push(`/projects/${projectId}/${branch.name}`)}
+            >
+              <ListItemText primary={branch.name} />
+            </ListItem>
+          ))
       )}
     </List>
   );
 };
 
-export default withRouter(Files);
+export default withRouter(Branches);
