@@ -7,7 +7,10 @@ import ConfigurationStore from './configuration';
 import remoteResource from './remoteResource';
 
 class SelectedProjectStore {
-  constructor(private readonly rootStore: Store, private readonly configurationStore: ConfigurationStore) {}
+  constructor(
+    private readonly rootStore: Store,
+    private readonly configurationStore: ConfigurationStore,
+  ) {}
 
   @observable
   project?: Project | null;
@@ -28,7 +31,12 @@ class SelectedProjectStore {
     return {
       url: `https://gitlab.com/api/v4/projects/${this.project.id}/repository/tree`,
       headers: { Authorization: `Bearer ${this.rootStore.token}` },
-      params: { recursive: true, per_page: 100, path: this.configurationStore.currentPath, ref: 'test/gui18n' },
+      params: {
+        recursive: true,
+        per_page: 100,
+        path: this.configurationStore.currentPath,
+        ref: 'test/gui18n',
+      },
     };
   });
 }

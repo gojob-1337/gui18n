@@ -41,14 +41,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-function  getCurrentPath(configuration) {
-  const {data} = configuration;
+function getCurrentPath(configuration) {
+  const { data } = configuration;
 
   if (!data) {
     return null;
   }
 
-  const defaultLanguage =  data.languages.find((lng) => lng.name === data.defaultLanguage);
+  const defaultLanguage = data.languages.find((lng) => lng.name === data.defaultLanguage);
   return defaultLanguage ? defaultLanguage.path : null;
 }
 
@@ -61,11 +61,13 @@ const Files: FunctionComponent<FilesProps> = (props) => {
 
   const config = useAxios(
     () => ({
-      url: `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${encodeURIComponent('.gui18n.json')}/raw`,
+      url: `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(
+        '.gui18n.json',
+      )}/raw`,
       headers: { Authorization: `Bearer ${token}` },
       params: { per_page: 100, ref: 'test/gui18n' },
     }),
-    [ projectId, branchPath],
+    [projectId, branchPath],
   );
 
   const path = getCurrentPath(config);
@@ -76,13 +78,15 @@ const Files: FunctionComponent<FilesProps> = (props) => {
       headers: { Authorization: `Bearer ${token}` },
       params: { per_page: 100, ref: decodeURIComponent(branchPath), path },
     }),
-    [ projectId, branchPath, path],
+    [projectId, branchPath, path],
   );
 
   const classes = useStyles();
 
   const selectFile = (filePath: string) => () => {
-    history.push(`/projects/${projectId}/${encodeURIComponent(branchPath)}/${encodeURIComponent(filePath)}`);
+    history.push(
+      `/projects/${projectId}/${encodeURIComponent(branchPath)}/${encodeURIComponent(filePath)}`,
+    );
   };
 
   return (

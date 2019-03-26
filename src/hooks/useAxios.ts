@@ -17,7 +17,7 @@ import { DependencyList, useEffect, useRef, useState } from 'react';
 const useAxios = <T extends any = any>(
   configCreator: () => AxiosRequestConfig | null,
   deps: DependencyList,
-  defaultValue?: T
+  defaultValue?: T,
 ) => {
   // the data we will fetch
   const [data, setData] = useState<T | undefined>(defaultValue);
@@ -29,7 +29,7 @@ const useAxios = <T extends any = any>(
 
   const cleanUp = () => {
     // reset all state and the cancel token
-    setLoading(false);
+    // setLoading(false);
     setError(undefined);
     if (cancelTokenRef.current) {
       cancelTokenRef.current.cancel();
@@ -50,9 +50,9 @@ const useAxios = <T extends any = any>(
       })
       .catch((e) => {
         if (!axios.isCancel(e)) {
+          setLoading(false);
           setError(e);
         }
-        setLoading(false);
       });
 
     return cleanUp;

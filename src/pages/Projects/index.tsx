@@ -8,13 +8,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/styles';
 
 import ScrollToTop from '../../components/ScrollToTop';
 import useAxios from '../../hooks/useAxios';
 import { useToken } from '../../hooks/useToken';
 
+import SearchInput from '../../components/SearchInput';
 import { history } from '../index';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -71,8 +71,13 @@ const Projects: FunctionComponent = () => {
       subheader={
         <ListSubheader className={classes.subheader} component="div">
           PROJETS
-          <TextField placeholder="Search" value={search} onChange={handleSearch} />
-        </ListSubheader>
+          <SearchInput
+            placeholder="Search"
+            value={search}
+            onChange={handleSearch}
+            loading={loading}
+          />
+          </ListSubheader>
       }
       className={classes.list}
     >
@@ -82,15 +87,15 @@ const Projects: FunctionComponent = () => {
           <CircularProgress />
         </div>
       ) : (
-        data.map((project) => (
-          <ListItem button key={project.id} onClick={() => history.push(`/projects/${project.id}`)}>
-            <ListItemAvatar>
-              <Avatar src={project.avatar_url}>{project.name.slice(0, 2)}</Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={project.name_with_namespace} secondary={project.description} />
-          </ListItem>
-        ))
-      )}
+          data.map((project) => (
+            <ListItem button key={project.id} onClick={() => history.push(`/projects/${project.id}`)}>
+              <ListItemAvatar>
+                <Avatar src={project.avatar_url}>{project.name.slice(0, 2)}</Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={project.name_with_namespace} secondary={project.description} />
+            </ListItem>
+          ))
+        )}
     </List>
   );
 };

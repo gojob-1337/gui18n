@@ -15,7 +15,11 @@ import ScrollToTop from '../../components/ScrollToTop';
 import useAxios from '../../hooks/useAxios';
 import { useToken } from '../../hooks/useToken';
 
-export type TranslationsProps = {} & RouteComponentProps<{ projectId: string; filePath: string, branchPath: string }>;
+export type TranslationsProps = {} & RouteComponentProps<{
+  projectId: string;
+  filePath: string;
+  branchPath: string;
+}>;
 
 const useStyles = makeStyles((theme: Theme) => ({
   list: {
@@ -38,7 +42,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Translations: FunctionComponent<TranslationsProps> = (props) => {
   const { filePath, projectId, branchPath } = props.match.params;
-  const [translations, setTranslations] = useState<{[key: string]: string} | undefined>(undefined);
+  const [translations, setTranslations] = useState<{ [key: string]: string } | undefined>(
+    undefined,
+  );
   const token = useToken();
 
   const classes = useStyles();
@@ -50,22 +56,22 @@ const Translations: FunctionComponent<TranslationsProps> = (props) => {
       params: { ref: decodeURIComponent(branchPath) },
       headers: { Authorization: `Bearer ${token}` },
     }),
-  [projectId, branchPath, filePath],
+    [projectId, branchPath, filePath],
   );
 
   useEffect(() => {
-       setTranslations(data);
+    setTranslations(data);
   }, [data]);
 
-  const handleChange = (key: string) =>
-    (e: ChangeEvent<HTMLInputElement>) => {
-         const newValue = (e.target.value);
-         setTranslations({...translations, [key]: newValue});
-    };
+  const handleChange = (key: string) => (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setTranslations({ ...translations, [key]: newValue });
+  };
 
   if (error) {
     return <div>Error {error.message}</div>;
   }
+
   return (
     <List
       component="nav"
@@ -80,11 +86,17 @@ const Translations: FunctionComponent<TranslationsProps> = (props) => {
           <CircularProgress />
         </div>
       ) : (
-      Object.keys(translations).map((key: string) => (
-        <ListItem key={key}>
-          <TextField className={classes.input} label={key} value={translations[key]} onChange={handleChange(key)}/>
-        </ListItem>
-      )))}
+        Object.keys(translations).map((key: string) => (
+          <ListItem key={key}>
+            <TextField
+              className={classes.input}
+              label={key}
+              value={translations[key]}
+              onChange={handleChange(key)}
+            />
+          </ListItem>
+        ))
+      )}
     </List>
   );
 };
