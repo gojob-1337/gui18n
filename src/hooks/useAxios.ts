@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { DependencyList, useEffect, useRef, useState } from 'react';
+import { DependencyList, useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Use this hook to perform request using axios
@@ -17,6 +17,7 @@ import { DependencyList, useEffect, useRef, useState } from 'react';
 const useAxios = <T extends any = any>(
   configCreator: () => AxiosRequestConfig | null,
   deps: DependencyList,
+  defer?: boolean,
   defaultValue?: T,
 ) => {
   // the data we will fetch
@@ -25,6 +26,9 @@ const useAxios = <T extends any = any>(
   const [loading, setLoading] = useState(false);
   // errors from the axios
   const [error, setError] = useState(undefined);
+
+  const config = configCreator();
+
   const cancelTokenRef = useRef(axios.CancelToken.source());
 
   const cleanUp = () => {
@@ -37,10 +41,9 @@ const useAxios = <T extends any = any>(
     cancelTokenRef.current = axios.CancelToken.source();
   };
 
-  useEffect(() => {
-    const config = configCreator();
+  const makeRequest = useCallback(() => {
     if (!config) {
-      return cleanUp;
+      return;
     }
     setLoading(true);
     axios({ ...config, cancelToken: cancelTokenRef.current.token })
@@ -54,11 +57,22 @@ const useAxios = <T extends any = any>(
           setError(e);
         }
       });
+  }, [setLoading, setData, setError, config]);
 
+  useEffect(() => {
+    if (!config || defer) {
+      return cleanUp;
+    }
+    makeRequest();
     return cleanUp;
-  }, deps);
+  }, [defer, ...deps]);
 
-  return { data, loading, error };
+  return {
+    data,
+    loading,
+    error,
+    makeRequest,
+  };
 };
 
 export default useAxios;

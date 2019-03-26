@@ -1,8 +1,9 @@
-import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, FunctionComponent, useEffect, useState } from 'react';
 
 import { RouteComponentProps, withRouter } from 'react-router';
 
 import { Theme } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -38,7 +39,51 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonWrapper: {
+    display: 'flex',
+    margin: 12,
+    justifyContent: 'center',
+  },
+  commitButton: {
+    minWidth: 160,
+  },
 }));
+
+export type CommitArgs = {
+  projectId: string;
+  branchPath: string;
+  filePath: string;
+  content?: { [key: string]: string };
+};
+
+const useCommit = ({ projectId, branchPath, filePath, content = {} }: CommitArgs) => {
+  const token = useToken();
+
+  filePath = decodeURIComponent(filePath);
+  branchPath = decodeURIComponent(branchPath);
+  const json = JSON.stringify(content, null, 2);
+
+  const body = {
+    branch: decodeURIComponent(branchPath),
+    commit_message: `update ${filePath} from ${branchPath}`,
+    actions: [{ action: 'update', file_path: filePath, content: json }],
+  };
+
+  const { data, loading, error, makeRequest } = useAxios(
+    () => {
+      return {
+        url: `https://gitlab.com/api/v4/projects/${projectId}/repository/commits`,
+        method: 'post',
+        data: body,
+        headers: { Authorization: `Bearer ${token}` },
+      };
+    },
+    [projectId, branchPath, filePath],
+    true,
+  );
+
+  return { handleCommit: makeRequest, loading, data, error };
+};
 
 const Translations: FunctionComponent<TranslationsProps> = (props) => {
   const { filePath, projectId, branchPath } = props.match.params;
@@ -49,7 +94,7 @@ const Translations: FunctionComponent<TranslationsProps> = (props) => {
 
   const classes = useStyles();
 
-  const { data, loading, error } = useAxios(
+  const { data, loading } = useAxios(
     () => ({
       url: `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${filePath}/raw`,
       method: 'get',
@@ -59,6 +104,13 @@ const Translations: FunctionComponent<TranslationsProps> = (props) => {
     [projectId, branchPath, filePath],
   );
 
+  const { handleCommit, loading: isCommitting } = useCommit({
+    branchPath,
+    content: translations,
+    filePath,
+    projectId,
+  });
+
   useEffect(() => {
     setTranslations(data);
   }, [data]);
@@ -67,10 +119,6 @@ const Translations: FunctionComponent<TranslationsProps> = (props) => {
     const newValue = e.target.value;
     setTranslations({ ...translations, [key]: newValue });
   };
-
-  if (error) {
-    return <div>Error {error.message}</div>;
-  }
 
   return (
     <List
@@ -86,16 +134,29 @@ const Translations: FunctionComponent<TranslationsProps> = (props) => {
           <CircularProgress />
         </div>
       ) : (
-        Object.keys(translations).map((key: string) => (
-          <ListItem key={key}>
-            <TextField
-              className={classes.input}
-              label={key}
-              value={translations[key]}
-              onChange={handleChange(key)}
-            />
-          </ListItem>
-        ))
+        <>
+          {Object.keys(translations).map((key: string) => (
+            <ListItem key={key}>
+              <TextField
+                className={classes.input}
+                label={key}
+                value={translations[key]}
+                onChange={handleChange(key)}
+              />
+            </ListItem>
+          ))}
+          <div className={classes.buttonWrapper}>
+            <Button
+              onClick={handleCommit}
+              color="primary"
+              variant="raised"
+              disabled={isCommitting}
+              className={classes.commitButton}
+            >
+              {isCommitting ? <CircularProgress size={16} /> : 'Commit'}
+            </Button>
+          </div>
+        </>
       )}
     </List>
   );
