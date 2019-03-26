@@ -1,14 +1,13 @@
 import React, { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
 
 import { Theme } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { makeStyles } from '@material-ui/styles';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 import ScrollToTop from '../../components/ScrollToTop';
 import useAxios from '../../hooks/useAxios';
@@ -40,17 +39,20 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Projects: FunctionComponent = () => {
+export type BranchesProps = {} & RouteComponentProps<{ projectId: string }>;
+
+const Branches: FunctionComponent<BranchesProps> = (props) => {
+  const { projectId } = props.match.params;
   const token = useToken();
   const [search, setSearch] = useState<string | undefined>(undefined);
 
   const { data, loading } = useAxios(
     () => ({
-      url: 'https://gitlab.com/api/v4/projects',
+      url: `https://gitlab.com/api/v4/projects/${projectId}/repository/branches`,
       headers: { Authorization: `Bearer ${token}` },
-      params: { membership: true, search },
+      params: { search },
     }),
-    [search],
+    [search, projectId],
   );
 
   const classes = useStyles();
@@ -70,14 +72,14 @@ const Projects: FunctionComponent = () => {
       component="nav"
       subheader={
         <ListSubheader className={classes.subheader} component="div">
-          PROJETS
+          BRANCHES
           <SearchInput
             placeholder="Search"
             value={search}
             onChange={handleSearch}
             loading={loading}
           />
-          </ListSubheader>
+        </ListSubheader>
       }
       className={classes.list}
     >
@@ -87,17 +89,22 @@ const Projects: FunctionComponent = () => {
           <CircularProgress />
         </div>
       ) : (
-          data.map((project) => (
-            <ListItem button key={project.id} onClick={() => history.push(`/projects/${project.id}`)}>
-              <ListItemAvatar>
-                <Avatar src={project.avatar_url}>{project.name.slice(0, 2)}</Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={project.name_with_namespace} secondary={project.description} />
+        data
+          .filter((branch: any) => !branch.merged)
+          .map((branch) => (
+            <ListItem
+              button
+              key={branch.name}
+              onClick={() =>
+                history.push(`/projects/${projectId}/${encodeURIComponent(branch.name)}`)
+              }
+            >
+              <ListItemText primary={branch.name} />
             </ListItem>
           ))
-        )}
+      )}
     </List>
   );
 };
 
-export default Projects;
+export default withRouter(Branches);

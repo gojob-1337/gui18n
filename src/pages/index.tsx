@@ -11,6 +11,7 @@ import Projects from './Projects';
 import Files from './Projects/Files';
 import Translations from './Projects/Translations';
 import Welcome from './Welcome';
+import Branches from './Projects/Branches';
 
 export const history = createBrowserHistory();
 
@@ -34,12 +35,21 @@ const Pages: FunctionComponent = observer(() => {
         <Switch>
           {auth && (
             <Route
-              path="/projects/:projectId/:filePath"
+              path="/projects/:projectId/:branchPath/:filePath"
               component={(props: any) => <Translations {...props} />}
             />
           )}
           {auth && (
-            <Route path="/projects/:projectId" component={(props: any) => <Files {...props} />} />
+            <Route
+              path="/projects/:projectId/:branchPath"
+              component={(props: any) => <Files {...props} />}
+            />
+          )}
+          {auth && (
+            <Route
+              path="/projects/:projectId"
+              component={(props: any) => <Branches {...props} />}
+            />
           )}
           {auth && <Route path="/projects" component={() => <Projects />} />}
           <Route
